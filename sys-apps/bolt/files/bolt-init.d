@@ -1,0 +1,14 @@
+#!/sbin/openrc-run
+# Copyright 1999-2019 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+name="Thunderbolt Security Daemon"
+description="Userspace system daemon to enable security levels for Thunderbolt 3"
+command="/usr/libexec/boltd"
+command_background="true"
+pidfile="/var/run/boltd.pid"
+
+depend() {
+	need %SEAT_MANAGER% dbus
+	before xdm
+}

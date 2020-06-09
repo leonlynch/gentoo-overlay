@@ -41,5 +41,9 @@ src_configure() {
 
 src_install() {
 	meson_src_install
+
+	cp "${FILESDIR}"/${PN}-init.d "${T}"/boltd
+	doinitd "${T}"/boltd
+
 	keepdir /var/lib/boltd
 }
