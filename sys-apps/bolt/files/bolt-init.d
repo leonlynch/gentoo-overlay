@@ -9,6 +9,6 @@ command_background="true"
 pidfile="/var/run/boltd.pid"
 
 depend() {
-	need %SEAT_MANAGER% dbus
+	need dbus
 	before xdm
 }
