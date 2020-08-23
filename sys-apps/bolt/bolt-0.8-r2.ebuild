@@ -35,7 +35,7 @@ pkg_pretend() {
 	check_extra_config
 
 	CONFIG_CHECK="HOTPLUG_PCI"
-	ERROR_HOTPLUG_PCI="Thunderbolt needs pci hotplug support, so please enable it."
+	ERROR_HOTPLUG_PCI="Thunderbolt requires PCI hotplug support, so please enable it."
 	check_extra_config
 }
 
