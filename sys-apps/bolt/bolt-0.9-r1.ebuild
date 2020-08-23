@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit meson systemd
+inherit linux-info meson systemd
 
 DESCRIPTION="Userspace system daemon to enable security levels for Thunderbolt 3"
 HOMEPAGE="https://gitlab.freedesktop.org/bolt/bolt"
@@ -25,6 +25,16 @@ DEPEND="
 	doc? ( app-text/asciidoc )"
 RDEPEND="${DEPEND}"
 
+pkg_pretend() {
+	CONFIG_CHECK="THUNDERBOLT"
+	ERROR_THUNDERBOLT="This package requires the thunderbolt kernel driver, so please enable it."
+	check_extra_config
+
+	CONFIG_CHECK="HOTPLUG_PCI"
+	ERROR_HOTPLUG_PCI="Thunderbolt requires PCI hotplug support, so please enable it."
+	check_extra_config
+}
+
 src_configure() {
 	local emesonargs=(
 		-Dman=$(usex doc true false)
@@ -37,5 +47,9 @@ src_configure() {
 
 src_install() {
 	meson_src_install
+
+	cp "${FILESDIR}"/${PN}-init.d "${T}"/boltd
+	doinitd "${T}"/boltd
+
 	keepdir /var/lib/boltd
 }
