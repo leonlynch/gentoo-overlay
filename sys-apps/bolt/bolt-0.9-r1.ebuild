@@ -1,7 +1,7 @@
 # Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
 inherit linux-info meson systemd
 
@@ -26,12 +26,12 @@ DEPEND="
 RDEPEND="${DEPEND}"
 
 pkg_pretend() {
-	CONFIG_CHECK="THUNDERBOLT"
-	ERROR_THUNDERBOLT="This package requires the thunderbolt kernel driver, so please enable it."
+	CONFIG_CHECK="~THUNDERBOLT"
+	ERROR_THUNDERBOLT="This package requires the thunderbolt kernel driver."
 	check_extra_config
 
-	CONFIG_CHECK="HOTPLUG_PCI"
-	ERROR_HOTPLUG_PCI="Thunderbolt requires PCI hotplug support, so please enable it."
+	CONFIG_CHECK="~HOTPLUG_PCI"
+	ERROR_HOTPLUG_PCI="Thunderbolt requires PCI hotplug support."
 	check_extra_config
 }
 
@@ -47,9 +47,6 @@ src_configure() {
 
 src_install() {
 	meson_src_install
-
-	cp "${FILESDIR}"/${PN}-init.d "${T}"/boltd
-	doinitd "${T}"/boltd
-
+	newinitd "${FILESDIR}"/${PN}.openrc boltd
 	keepdir /var/lib/boltd
 }
