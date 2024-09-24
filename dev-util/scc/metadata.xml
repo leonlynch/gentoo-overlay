@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>lynch.leon@gmail.com</email>
+		<name>Leon Lynch</name>
+	</maintainer>
+	<upstream>
+		<remote-id type="github">boyter/scc</remote-id>
+	</upstream>
+</pkgmetadata>
