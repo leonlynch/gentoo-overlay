@@ -6,7 +6,7 @@ EAPI=8
 inherit go-module
 
 DESCRIPTION="scc is a very fast accurate code counter"
-HOMEPAGE="https://github.com/boyter/scc/tree/master"
+HOMEPAGE="https://github.com/boyter/scc"
 SRC_URI="https://github.com/boyter/scc/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="MIT Unlicense"
