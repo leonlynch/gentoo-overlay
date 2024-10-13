@@ -1,0 +1,7 @@
+# Copyright 1999-2024 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+# Leon Lynch <lynch.leon@gmail.com>
+# Live ebuild is only of interest if it supports hardware that is not
+# supported by the latest versioned ebuild.
+=games-util/xr-hardware-9999
