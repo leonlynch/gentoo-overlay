@@ -11,6 +11,7 @@ DESCRIPTION="NordVPN native client"
 HOMEPAGE="https://nordvpn.com https://gitlab.com/lahouari.dc/nordvpn"
 SRC_URI="https://repo.nordvpn.com/deb/nordvpn/debian/pool/main/nordvpn_${MY_PV}_amd64.deb"
 
+S="${WORKDIR}"
 LICENSE="NordVPN"
 SLOT="0"
 KEYWORDS="-* ~amd64"
@@ -26,9 +27,7 @@ RDEPEND="net-misc/networkmanager
 		sys-apps/iproute2
 		acct-group/nordvpn"
 
-
 RESTRICT="strip"
-S="${WORKDIR}"
 
 src_unpack() {
 	# Unpack Debian package containing application's files
@@ -45,7 +44,6 @@ src_install() {
 #	doinitd etc/init.d/nordvpn
 	systemd_dounit usr/lib/systemd/system/nordvpnd.{service,socket}
 #	systemd_douserunit usr/lib/nordvpn/nordfileshared.{service,socket}
-
 
 #   into<-->/usr
 	dobin usr/bin/nordvpn
