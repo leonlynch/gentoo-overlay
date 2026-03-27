@@ -1,9 +1,11 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-inherit meson
+PYTHON_COMPAT=( python3_{11,12,13,14} )
+
+inherit meson python-single-r1
 
 DESCRIPTION="A library for XR interaction with traditional desktop compositors."
 HOMEPAGE="https://gitlab.freedesktop.org/xrdesktop/xrdesktop"
@@ -19,12 +21,14 @@ fi
 LICENSE="MIT"
 SLOT="0/9999"
 IUSE=""
-REQUIRED_USE=""
+REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 DEPEND="
-	dev-lang/python:3.14
-	dev-python/pygobject
+	$(python_gen_cond_dep '
+		dev-python/pygobject[${PYTHON_USEDEP}]
+	')
 	>=media-libs/g3k-0.16.0
+	${PYTHON_DEPS}
 "
 RDEPEND="
 	${DEPEND}
@@ -33,6 +37,12 @@ BDEPEND="
 	virtual/pkgconfig
 "
 
-PATCHES=(
-    "${FILESDIR}/${PN}-python-3.14.patch"
-)
+pkg_setup() {
+	python_setup
+}
+
+src_install() {
+	meson_src_install
+	python_fix_shebang "${ED}/usr/bin/xrd-settings"
+	python_optimize
+}
