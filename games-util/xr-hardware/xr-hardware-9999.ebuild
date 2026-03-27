@@ -15,8 +15,17 @@ fi
 
 LICENSE="Boost-1.0"
 SLOT="0"
-KEYWORDS="~amd64"
-
-# TODO: use install_package
+if [[ "${PV}" == *9999 ]] ; then
+	KEYWORDS=""
+else
+	KEYWORDS="~amd64"
+fi
 
 DOCS=( README.md LICENSE.txt )
+
+src_compile() { :; }
+
+src_install() {
+	emake DESTDIR="${D}" PREFIX="${EPREFIX}/usr" install_package
+	einstalldocs
+}
