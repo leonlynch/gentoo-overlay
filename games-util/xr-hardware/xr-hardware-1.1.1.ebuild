@@ -3,6 +3,8 @@
 
 EAPI=8
 
+inherit udev
+
 DESCRIPTION="XR Hardware Rules"
 HOMEPAGE="https://gitlab.freedesktop.org/monado/utilities/xr-hardware"
 if [[ "${PV}" == *9999 ]] ; then
@@ -24,4 +26,12 @@ src_compile() { :; }
 src_install() {
 	emake DESTDIR="${D}" PREFIX="${EPREFIX}/usr" install_package
 	einstalldocs
+}
+
+pkg_postinst() {
+	udev_reload
+}
+
+pkg_postrm() {
+	udev_reload
 }
