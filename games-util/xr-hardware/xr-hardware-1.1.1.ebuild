@@ -11,15 +11,11 @@ if [[ "${PV}" == *9999 ]] ; then
 	EGIT_BRANCH="main"
 else
 	SRC_URI="https://gitlab.freedesktop.org/monado/utilities/xr-hardware/-/archive/${PV}/${P}.tar.bz2"
+	KEYWORDS="~amd64"
 fi
 
 LICENSE="Boost-1.0"
 SLOT="0"
-if [[ "${PV}" == *9999 ]] ; then
-	KEYWORDS=""
-else
-	KEYWORDS="~amd64"
-fi
 
 DOCS=( README.md LICENSE.txt )
 
