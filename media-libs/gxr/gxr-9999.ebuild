@@ -1,11 +1,11 @@
 # Copyright 1999-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit meson
 
-DESCRIPTION="A glib wrapper for the OpenVR and the OpenXR APIs."
+DESCRIPTION="A glib wrapper for the OpenXR API."
 HOMEPAGE="https://gitlab.freedesktop.org/xrdesktop/gxr"
 
 if [[ ${PV} == 9999 ]]; then
@@ -18,19 +18,28 @@ fi
 
 LICENSE="MIT"
 SLOT="0/9999"
-IUSE=""
+IUSE="introspection"
 
 DEPEND="
 	dev-libs/glib
 	dev-libs/json-glib
 	>=media-libs/gulkan-0.16.0
 	media-libs/openxr-loader
-	>=x11-libs/gtk+-3.22
+	introspection? ( dev-libs/gobject-introspection )
 "
 RDEPEND="
 	${DEPEND}
 "
 BDEPEND="
-	>=dev-build/meson-0.52.0
 	virtual/pkgconfig
 "
+
+src_configure() {
+	local emesonargs=(
+		$(meson_use introspection)
+		-Dexamples=false
+		-Dtests=false
+		-Dapi_doc=false
+	)
+	meson_src_configure
+}
