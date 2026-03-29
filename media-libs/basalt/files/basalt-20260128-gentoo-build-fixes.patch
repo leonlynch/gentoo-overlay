@@ -1,0 +1,59 @@
+Fixes for building release-e4e81cb3 with Gentoo's system packages:
+
+1. CMakeLists.txt: drop version constraint and MODULE from find_package(Eigen3)
+   so CMake uses Eigen3Config.cmake (from dev-cpp/eigen) instead of the bundled
+   cmake_modules/FindEigen3.cmake, which reads Eigen/Version — a file that does
+   not exist in Gentoo's Eigen 3.4 installation.
+   Note: cmake_modules/FindEigen3.cmake is removed in src_prepare.
+
+2. thirdparty/CMakeLists.txt: guard the opengv block with
+   if(NOT BASALT_BUILD_SHARED_LIBRARY_ONLY).  opengv is only linked in that
+   mode, but add_subdirectory was called unconditionally.  When the submodule
+   is not fetched the empty directory has no CMakeLists.txt and cmake errors.
+
+3. thirdparty/basalt-headers/CMakeLists.txt: guard ignore_external_warnings
+   for the "eigen" target behind if(TARGET eigen).  The target only exists
+   when using the bundled Eigen submodule; with BASALT_BUILTIN_EIGEN=OFF
+   only Eigen3::Eigen is available and the unconditional call fails.
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -268,7 +268,7 @@
+ set(CMAKE_CXX_FLAGS "${BASALT_CXX_FLAGS} ${BASALT_MARCH_FLAGS} ${BASALT_MCPU_FLAGS} ${BASALT_PASSED_CXX_FLAGS}")
+
+ set(EIGEN_INCLUDE_DIR_HINTS ${EIGEN_ROOT})
+-find_package(Eigen3 3.4.0 EXACT REQUIRED MODULE)
++find_package(Eigen3 REQUIRED)
+ message(STATUS "Found Eigen headers in: ${EIGEN3_INCLUDE_DIR}")
+ if(NOT EIGEN3_INCLUDE_DIR MATCHES "^${EIGEN_ROOT}")
+   message(WARNING "Found Eigen headers are outside of specified EIGEN_ROOT '${EIGEN_ROOT}'")
+--- a/thirdparty/CMakeLists.txt
++++ b/thirdparty/CMakeLists.txt
+@@ -32,6 +32,7 @@
+ set(EIGEN_INCLUDE_DIR "${EIGEN3_INCLUDE_DIR}")
+ set(EIGEN_INCLUDE_DIRS "${EIGEN3_INCLUDE_DIR}")
+
++if(NOT BASALT_BUILD_SHARED_LIBRARY_ONLY)
+ # Hack to disable march=native in opengv
+ macro(add_definitions)
+   if(NOT ${ARGV0} STREQUAL "-march=native")
+@@ -47,5 +48,6 @@
+ target_compile_options(opengv PRIVATE ${BASALT_MARCH_FLAGS} "SHELL:${BASALT_PASSED_CXX_FLAGS}")
+ ignore_external_warnings(opengv)
++endif()
+
+ # Hack to disable CPack in Pangolin.
+ macro(include)
+--- a/thirdparty/basalt-headers/CMakeLists.txt
++++ b/thirdparty/basalt-headers/CMakeLists.txt
+@@ -111,7 +111,9 @@
+   message(STATUS "Eigen already available")
+ endif()
+ report_dependency_location(Eigen3 Eigen3::Eigen)
+-ignore_external_warnings(eigen)
++if(TARGET eigen)
++  ignore_external_warnings(eigen)
++endif()
+
+ option(BASALT_BUILTIN_SOPHUS "Use builtin Sophus from submodule" ON)
+ if(NOT TARGET Sophus::Sophus)
