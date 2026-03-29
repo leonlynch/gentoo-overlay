@@ -38,6 +38,16 @@ RDEPEND="
 	media-libs/opencv:=
 "
 
+PATCHES=( "${FILESDIR}/${PN}-9999-gentoo-build-fixes.patch" )
+
+src_prepare() {
+	# cmake_modules/FindEigen3.cmake reads Eigen/Version which does not exist in
+	# Gentoo's dev-cpp/eigen; the patch drops MODULE from find_package(Eigen3)
+	# and this rm together switch cmake to config-mode (Eigen3Config.cmake).
+	rm cmake_modules/FindEigen3.cmake || die
+	cmake_src_prepare
+}
+
 src_configure() {
 	local mycmakeargs=(
 		-DBASALT_BUILD_SHARED_LIBRARY_ONLY=ON
