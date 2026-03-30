@@ -12,13 +12,14 @@ EGIT_COMMIT="release-e4e81cb3"
 
 # Sophus has no Gentoo package. CLI11 and magic_enum include-dirs are
 # hard-coded in CMakeLists, so system packages cannot be used without patching.
-# Excluded: opengv/ros/fastcdr (not linked when BASALT_BUILD_SHARED_LIBRARY_ONLY=ON).
+# Excluded: ros/fastcdr (not linked when BASALT_BUILD_SHARED_LIBRARY_ONLY=ON).
 EGIT_SUBMODULES=(
 	thirdparty/basalt-headers
 	thirdparty/basalt-headers/thirdparty/Sophus
 	thirdparty/basalt-headers/thirdparty/cereal
 	thirdparty/CLI11
 	thirdparty/magic_enum
+	thirdparty/opengv
 	thirdparty/Pangolin
 )
 
