@@ -62,6 +62,10 @@ src_configure() {
 		-DBASALT_BUILD_SHARED_LIBRARY_ONLY=ON
 		-DBASALT_BUILTIN_EIGEN=OFF
 		-DEIGEN_ROOT="${ESYSROOT}/usr/include/eigen3"
+		# basalt explicitly uses add_library(basalt SHARED) but assumes that
+		# submodule dependencies are built as static libraries. As such,
+		# setting BUILD_SHARED_LIBS=ON causes build failures.
+		-DBUILD_SHARED_LIBS=OFF
 	)
 	cmake_src_configure
 }
