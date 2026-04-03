@@ -6,13 +6,19 @@ Fixes for building release-e4e81cb3 with Gentoo's system packages:
    not exist in Gentoo's Eigen 3.4 installation.
    Note: cmake_modules/FindEigen3.cmake is removed in src_prepare.
 
-2. thirdparty/basalt-headers/CMakeLists.txt: fix ignore_external_warnings to
-   use an allowlist of compilable target types instead of a blocklist; Pangolin's
-   BUILDSYSTEM_TARGETS includes UTILITY (custom) targets which are not compilable,
-   and the original INTERFACE_LIBRARY-only guard did not cover them.  Also guard
-   ignore_external_warnings(eigen) behind if(TARGET eigen): the target only exists
-   when using the bundled Eigen submodule; with BASALT_BUILTIN_EIGEN=OFF only
-   Eigen3::Eigen is available.
+2. thirdparty/CMakeLists.txt: remove the "uninstall" UTILITY target from
+   pangolin_targets before passing it to target_link_libraries and
+   ignore_external_warnings.  The release was written for cmake 3.20, which
+   silently skipped UTILITY targets in target_link_libraries of an INTERFACE
+   library; cmake 4.x adds them as hard build prerequisites, causing Pangolin's
+   uninstall custom target to be invoked during the build and FATAL_ERROR because
+   install_manifest.txt does not exist yet.  Backport of the upstream main fix.
+
+3. thirdparty/basalt-headers/CMakeLists.txt: guard ignore_external_warnings(eigen)
+   behind if(TARGET eigen).  The "eigen" target only exists when using the bundled
+   Eigen submodule (BASALT_BUILTIN_EIGEN=ON); with BASALT_BUILTIN_EIGEN=OFF only
+   Eigen3::Eigen is available and calling ignore_external_warnings on a
+   non-existent target causes a CMake error.
 
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
@@ -25,18 +31,19 @@ Fixes for building release-e4e81cb3 with Gentoo's system packages:
  message(STATUS "Found Eigen headers in: ${EIGEN3_INCLUDE_DIR}")
  if(NOT EIGEN3_INCLUDE_DIR MATCHES "^${EIGEN_ROOT}")
    message(WARNING "Found Eigen headers are outside of specified EIGEN_ROOT '${EIGEN_ROOT}'")
+--- a/thirdparty/CMakeLists.txt
++++ b/thirdparty/CMakeLists.txt
+@@ -59,6 +59,7 @@
+ add_subdirectory(Pangolin EXCLUDE_FROM_ALL)
+
+ get_property(pangolin_targets DIRECTORY Pangolin PROPERTY BUILDSYSTEM_TARGETS)
++list(REMOVE_ITEM pangolin_targets "uninstall") # uninstall is a UTILITY target
+ foreach(_target ${pangolin_targets})
+   ignore_external_warnings(${_target})
+ endforeach()
 --- a/thirdparty/basalt-headers/CMakeLists.txt
 +++ b/thirdparty/basalt-headers/CMakeLists.txt
-@@ -9,6 +9,7 @@
-   # Silence compile warnings
-   get_target_property(_target_type ${target} TYPE)
--  if(NOT _target_type STREQUAL "INTERFACE_LIBRARY")
-+  if(_target_type MATCHES
-+      "^(STATIC_LIBRARY|MODULE_LIBRARY|SHARED_LIBRARY|OBJECT_LIBRARY|EXECUTABLE)$")
-     target_compile_options(${target} PRIVATE "-w")
-   endif()
-
-@@ -111,7 +112,9 @@
+@@ -111,7 +111,9 @@
    message(STATUS "Eigen already available")
  endif()
  report_dependency_location(Eigen3 Eigen3::Eigen)
