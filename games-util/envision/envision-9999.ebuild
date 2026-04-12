@@ -16,6 +16,7 @@ LICENSE="AGPL-3+"
 LICENSE+=" Apache-2.0 BSD MIT MPL-2.0 Unicode-3.0 ZLIB"
 SLOT="0"
 KEYWORDS=""
+IUSE="onnxruntime system-monado"
 
 RESTRICT="mirror"
 PROPERTIES="live"
@@ -30,7 +31,7 @@ DEPEND="
 "
 
 # Deps above plus everything Envision needs at runtime to build and run
-# the WMR XR stack (Reverb G2 profile uses Monado + Basalt + Mercury).
+# the WMR XR stack (Reverb G2 profile uses Monado + Basalt).
 RDEPEND="
 	${DEPEND}
 	app-arch/bzip2
@@ -60,6 +61,8 @@ RDEPEND="
 	media-libs/opencv
 	media-libs/shaderc
 	media-libs/vulkan-loader
+	onnxruntime? ( sci-libs/onnxruntime )
+	system-monado? ( media-libs/monado )
 	sys-auth/polkit
 	sys-devel/bc
 	virtual/libudev

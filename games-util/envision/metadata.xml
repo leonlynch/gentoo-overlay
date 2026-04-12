@@ -8,4 +8,8 @@
 	<upstream>
 		<remote-id type="gitlab">gabmus/envision</remote-id>
 	</upstream>
+	<use>
+		<flag name="onnxruntime">Enable hand tracking support via <pkg>sci-libs/onnxruntime</pkg></flag>
+		<flag name="system-monado">Use the system-provided media-libs/monado (from Guru overlay) instead of Envision building its own copy at runtime</flag>
+	</use>
 </pkgmetadata>
